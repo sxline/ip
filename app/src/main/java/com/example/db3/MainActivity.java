@@ -7,11 +7,15 @@ import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.text.DecimalFormat;
 
+import com.example.db3.R;
+
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ContentValues;
+import android.content.Intent;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
@@ -19,8 +23,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -30,41 +36,55 @@ import android.widget.AdapterView.OnItemSelectedListener;
 
 @SuppressLint("SdCardPath")
 public class MainActivity extends Activity {
-    String DBName="Shop";
+    String DBName="Shop3";
 
     public DecimalFormat df = new DecimalFormat("#.##");
     String [] data2=new String[50];
     public String[] sqlprop;
     public String[] wd;
     EditText et1,et2,et3;
+    EditText txtData;
+    Button btnWriteSDFile;
+    Button btnReadSDFile;
+    Button btnClearScreen;
+    Button btnClose;
     FileOper tabel;
+//    SQLiteDatabase: /data/user/0/com.example.db3/databases/CatPrSales
     SQLiteDatabase db;
     TextView tv;
     DBHelper dbHelper;
+    String [] tableFields;
     String [][] cc=new String[20][20];
     String [][] cc1=new String[20][20];
+    String [] ss, whereCV;
+    String [] tablesContent=new String[20];
+    String [] tablesStruct=new String[20];
     String [] tabNames=new String[20];
     String tabStruct,tabContent;
     int numberOfTables;
     public final int IPC_ID = 1122;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        txtData = (EditText) findViewById(R.id.txtData);
+        txtData.setHint("Enter some lines of data here...");
         tv = (TextView)findViewById(R.id.textView1);
         et1=(EditText)findViewById(R.id.editText1);
         et2=(EditText)findViewById(R.id.editText2);
         et3=(EditText)findViewById(R.id.editText3);
         tv.setMovementMethod(new ScrollingMovementMethod());
-        String whereC="  PPrice > ?  OR Squant> ? ";
+        String whereC="  NF > ?  OR PF=? ";
+        whereC="  Price > ?  OR Am > ? ";
         String whereV=" 6; 5; ";
         et1.setText(whereC);
-        et2.setText("et2: Editable Values for Restriction(s):  " );
+        et2.setText("Editable Values for Restriction(s):  " );
         et3.setText(whereV);
         cc[1][1]="11"; cc[1][2]="12";
         cc1=cc;
         Log.d(" cc=cc1", "cc[1][1]=  " + cc1[1][1] + "cc[1][2]=  " + cc1[1][2]);
+
+
     }
 
 
@@ -73,15 +93,14 @@ public class MainActivity extends Activity {
     {
         dbHelper = new DBHelper(this, DBName);
         db = dbHelper.getWritableDatabase();
-
         Log.d("Create DB=","The DB " +DBName+ "  was created OR Opened the exiting one!");
-
-        tv.setText("Database was created");
+        //db.execSQL("DROP TABLE IF EXISTS detbord");
+        //db.execSQL("DROP TABLE IF EXISTS bord");
     }
-
     public void createTAB(View v)
     {
-        String aBuffer;
+        String aDataRow = "";
+        String aBuffer = "";
         String tt;
         int nf;
         String [] fieldsN=new String[10];
@@ -91,15 +110,14 @@ public class MainActivity extends Activity {
         Log.d("Read tabN=",tabN);
         aBuffer=tabel.readTable(tabN);
         tt=aBuffer;
-        String [] tn=tt.split("\n");
+        aBuffer="";
+        String [] tn=tt.toString().split("\n");
         int nt=tn.length;
         numberOfTables=nt;
-        Log.d("","N="+ nt +"  Nume tabel="+tn[0]+",  Nume tabel2="+tn[1]);
-
+        Log.d("","N="+String.valueOf(nt)+"  Nume tabel="+tn[0]+",  Nume tabel2="+tn[1]);
+        for(int i=0;i<nt;i++) tabNames[i]=tn[i];
         for(int i=0;i<nt;i++)
         {
-            tabNames[i]=tn[i];
-
             boolean te=exists(tn[i]);
             if(!te)
             {
@@ -117,11 +135,17 @@ public class MainActivity extends Activity {
                 Log.d("Tabelul : ",tn[i]);
                 Log.d("Fields",fieldsN[0] + " , "+ fieldsT[0]+" , "+fieldsN[1]+ " , "+fieldsT[1]);
 
+                // create table i
+
+                boolean  tableExists=false;
+
                 Log.d("before try Table:", tn[i]+ "   to create???   ");
                 try
                 {
                     // creating a table
                     dbHelper.createT(db, tn[i], fieldsN, fieldsT, nf);
+                    tableExists = true;
+
                     Log.d("Table:", "The  "+ tn[i] + "   was created   ");
                 }
                 catch (Exception e) {
@@ -135,17 +159,23 @@ public class MainActivity extends Activity {
 
     }
     public boolean exists(String table) {
+        Cursor c = null;
+        boolean tableExists = false;
+        /* get cursor on it */
         try
         {
-            db.query(table, null, null, null, null,
-                    null, null).close();
+            c = db.query(table, null,
+                    null, null, null, null, null);
+            tableExists = true;
             Log.d("About existing ", "The table "+table+"  exists! :))))");
-            return true;
         }
         catch (Exception e) {
+            /* fail */
             Log.d("The table is missing", table+" doesn't exist :(((");
-            return false;
+
         }
+
+        return tableExists;
     }
 
     public void fillTAB(View v)
@@ -158,8 +188,8 @@ public class MainActivity extends Activity {
 
             Log.d("Before if", tabN);
             if(te)
-            {
-                Log.d("Inside  if", "The table:  " + tabN + "   Exists");
+            {  //if the tb exists then fill it
+                Log.d("Inside  if", "The table:  "+tabN+ "   Exists");
                 //the table exests:  	//clear the table
                 db.delete(tabN,null,null);
                 Log.d("After delete",tabN);
@@ -175,10 +205,11 @@ public class MainActivity extends Activity {
                 String [] fieldsT =tfC[1].split("\t");
                 nf=fieldsN.length;
                 // insert rows
+                ContentValues cv = new ContentValues();
                 int sw;double nnf;
                 for (int j=2;j<nr;j++) //on rows nr=tfC.length;
                 {
-                    ContentValues cv = new ContentValues();
+                    cv.clear();
                     if (tabN.equals("detbord"))
                     { String [] rcd=tfC[j].toString().split("\t");
                         nnf =Float.valueOf(rcd[2])*0.15  + Float.valueOf(rcd[3])*0.15
@@ -194,8 +225,12 @@ public class MainActivity extends Activity {
                         {
                             case 1:
                                 cv.put(fieldsN[k], Integer.valueOf(rcd[k].toString()));
+                                break;
                             case 2:
                                 cv.put(fieldsN[k], rcd[k].toString());
+                                break;
+                            default:
+                                break;
                         }
                     }// end of fields
                     db.insert(tabN, null, cv);
@@ -241,61 +276,56 @@ public class MainActivity extends Activity {
         String  whereC=et1.getText().toString().trim();
         String  whereV=et3.getText().toString().trim();
 
-        whereV = whereV.replace(" ", "");
+        whereV=whereV.replace(" ", "");
         String [] s2=whereV.split(";");
+        //vv1=s2[0].trim(); vv2=s2[1].trim(); vv3=s2[2].trim(); vv4=s2[3].trim();
+        // String []  val =new String[4];
         int np=s2.length;
         //whereC=s1[0];
         Log.d("Numar de parametri","parametri= "+np);
         Log.d("WhereC=","whereC= "+whereC  );
         Log.d("WhereV=","whereV= "+whereV  );
-
+        // Log.d("WhereC=","whereV= "+whereV+  "  , v1="+s2[0]+" ,  v2="+s2[1]);
         for (int j=0;j<np;j++)
             s2[j]=s2[j].trim();
 
-        String studLista1= "select PR.prid as ProdID, PR.prn AS ProdN,PR.price AS PPrice, SM.quants as SQuant "
-                + "from ProductsM as PR "
-                + "inner join SalesM as SM "
-                + "on SM.prid=PR.prid "
+
+        String studLista1= "select a.AId as AdId, a.Title AS Title, a.Price AS Price, a.Amount as Am, u.Fname as Name, u.Phone as Ph "
+                + "from UsersM as u "
+                + "inner join AdvertsM as a on a.Uid=u.UserId, "
+                + "inner join FavoritesM as f "
+                + "inner join CommentsM as c "
+                + "inner join RatingsM as r "
+                + ""
                 + "where " +whereC;
 
-
-        String sqlQuery3 = "select PL.name as Name, PS.name as Position, salary as Salary "
-                + "from people as PL "
-                + "inner join position as PS "
-                + "on PL.posid = PS.id "
-                + "where salary > ?";
-
-        Cursor c;        c=null;
+        Cursor c;
+        c=null;
         // c = db.rawQuery(studLista1, new String[] {"600"});
         c = db.rawQuery(studLista1, s2);
         // c = db.rawQuery(studLista1, null);
         logCursor1(c);
         c.close();
         Log.d("End Lista", "End Lista");
-
+        txtData.setText("Example of Conditions: " +whereC );
         // txtData.append(whereV);
 
     }
 
 
     // afisare in LOG din Cursor
-    @SuppressLint("Range")
     void logCursor(Cursor c) {
-        tv.setText("");
-        String str2="Results For the Fields : ";
-        String cnn="",coln="";
+        tv.setText(""); String str2="Results For the Fields : ";String cnn="",coln="";
         if (c != null) {
             if (c.moveToFirst()) {
                 String str,str1;
                 int klu=0,rr=0;
                 do {
-                    rr=0;
-                    str = "";
-                    str1="";
+                    rr=0;  str = "";str1="";
                     if (klu==0) //  the first record
                     {
                         for (String cn : c.getColumnNames())
-                        {
+                        { //if(rr<6)
                             {//str = str.concat(cn + " = " + c.getString(c.getColumnIndex(cn)) + "; ");
                                 str = str.concat( c.getString(c.getColumnIndex(cn)) + "; ");
                                 cnn=cnn.concat(cn+" ; ");
@@ -307,9 +337,7 @@ public class MainActivity extends Activity {
 
                     }
                     // for the next records
-                    rr=0;
-                    str = "";
-                    str1="";
+                    rr=0;  str = "";str1="";
                     if (klu>0) //  the next records
                     {
                         for (String cn : c.getColumnNames())
@@ -324,10 +352,7 @@ public class MainActivity extends Activity {
                         }
 
                     }
-                    if (klu==0) {
-                        str2=str2 + cnn;
-                        tv.setText(cnn+"\n");
-                    }
+                    if (klu==0) {str2=str2 + cnn;tv.setText(cnn+"\n");}
                     klu++;
                     rr++;
                     str1=str+"\n";
@@ -337,16 +362,15 @@ public class MainActivity extends Activity {
                 } while (c.moveToNext());
 
             }
+            // txtData.setText(str2 + " with WHERE Conditions : " + "\n");
         } else
             Log.d("Rindul", "Cursor is null");
     }
     // afisare in LOG din Cursor
-    @SuppressLint("Range")
     void logCursor1(Cursor c) {
         Log.d("COLUMNS NR=","nc="+c.getColumnCount());
 
-        tv.setText(""); String str2="Results For the Fields : ";
-        String cnn="",coln="";
+        tv.setText(""); String str2="Results For the Fields : ";String cnn="",coln="";
         if (c != null) {
             if (c.moveToFirst()) {
                 String str,str1;
@@ -356,22 +380,19 @@ public class MainActivity extends Activity {
                     rr=0; str = "";str1="";
 
                     // for the next records
-                    for (String cn : c.getColumnNames()){
-                        if(rr>-1)
-                            {//str = str.concat(cn + " = " + c.getString(c.getColumnIndex(cn)) + "; ");
-                                str = str.concat( c.getString(c.getColumnIndex(cn)) + "; ");
-                                cnn=cnn.concat(cn+" ; ");
+                    for (String cn : c.getColumnNames())
+                    {if(rr>-1)
+                    {//str = str.concat(cn + " = " + c.getString(c.getColumnIndex(cn)) + "; ");
+                        str = str.concat( c.getString(c.getColumnIndex(cn)) + "; ");
+                        cnn=cnn.concat(cn+" ; ");
 
-                            }
+                    }
 
                         rr++;
                         Log.d("COLUMNS NR=","nc="+c.getColumnCount()+", rr="+rr);
                     }
 
-                    if (klu==0) {
-                        str2=str2 + cnn;
-                        tv.setText(cnn+"\n");
-                    }
+                    if (klu==0) {str2=str2 + cnn;tv.setText(cnn+"\n");}
                     klu++;
                     rr++;
                     str1=str+"\n";
@@ -417,8 +438,32 @@ public class MainActivity extends Activity {
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, data1);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-        Log.d("Hello","salut din lista inainte de seletion 2");
+        Spinner spinner = (Spinner) findViewById(R.id.spinner2);
+        spinner.setAdapter(adapter);
 
+        spinner.setPrompt("Title");
+
+        Log.d("Hello","salut din lista inainte de seletion 2");
+        spinner.setSelection(0);
+
+        spinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view,
+                                       int position, long id) {
+
+                Toast.makeText(getBaseContext(), "Position = " + position, Toast.LENGTH_SHORT).show();
+                et1=(EditText)findViewById(R.id.editText1);
+
+
+                String ss=data2[position];
+                et1.setText(ss);
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> arg0) {
+            }
+        });
 
     }
     public void ReadSQL(View v)
@@ -449,8 +494,6 @@ public class MainActivity extends Activity {
 
 
     }
-
-
     public void lista(View v)
     {
 
@@ -463,6 +506,33 @@ public class MainActivity extends Activity {
         data2=data1;
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, data1);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        Spinner spinner = (Spinner) findViewById(R.id.spinner1);
+        spinner.setAdapter(adapter);
+
+        spinner.setPrompt("Title");
+
+        Log.d("Hello","salut din lista inainte de seletion 2");
+        spinner.setSelection(0);
+
+        spinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view,
+                                       int position, long id) {
+
+                Toast.makeText(getBaseContext(), "Position = " + position, Toast.LENGTH_SHORT).show();
+                et1=(EditText)findViewById(R.id.editText1);
+
+
+                String ss=data2[position];
+                et1.setText(ss);
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> arg0) {
+            }
+        });
 
     }
     @Override

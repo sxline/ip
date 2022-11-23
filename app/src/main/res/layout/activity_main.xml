@@ -3,46 +3,46 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-       tools:context=".MainActivity" >
+    tools:context=".MainActivity" >
 
 
-<LinearLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal" >
-       
-       <Button
-           android:id="@+id/createDB"
-           android:layout_width="wrap_content"
-           android:layout_height="wrap_content"
-           android:onClick="createDB"
-           android:text="CrDb" />
-       <Button
-           android:id="@+id/createTab"
-           android:layout_width="wrap_content"
-           android:layout_height="wrap_content"
-           android:onClick="createTAB"
-           android:text="CrTab" />
+
         <Button
-           android:id="@+id/fillTab"
-           android:layout_width="wrap_content"
-           android:layout_height="wrap_content"
-           android:onClick="fillTAB"
-           android:text="FillTab" />
+            android:id="@+id/createDB"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="createDB"
+            android:text="CrDb" />
         <Button
-           android:id="@+id/studLista"
-           android:layout_width="wrap_content"
-           android:layout_height="wrap_content"
-           android:onClick="studL"
-           android:text="ProdL" />
+            android:id="@+id/createTab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="createTAB"
+            android:text="CrTab" />
         <Button
-           android:id="@+id/ReadWds"
-           android:layout_width="wrap_content"
-           android:layout_height="wrap_content"
-           android:onClick="ReadWords"
-           android:text="RWds" />
-        
- </LinearLayout>      
+            android:id="@+id/fillTab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="fillTAB"
+            android:text="FillTab" />
+        <Button
+            android:id="@+id/studLista"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="studL"
+            android:text="ProdL" />
+        <Button
+            android:id="@+id/ReadWds"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="ReadWords"
+            android:text="RWds" />
+
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -52,91 +52,88 @@
         <TextView
             android:id="@+id/textView1"
             android:layout_width="match_parent"
-            android:layout_height="435dp"
+            android:layout_height="263dp"
             android:text="Salut" />
-
-        <TextView
-            android:id="@+id/textViewSelect"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="SELECT"
-            android:textAlignment="center" />
 
         <EditText
             android:id="@+id/editText1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:text="editText1">
+            android:text="editText1" >
 
             <requestFocus />
         </EditText>
-
-        <TextView
-            android:id="@+id/textViewSelect2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:autoText="false"
-            android:text="FROM"
-            android:textAlignment="center" />
-
         <EditText
             android:id="@+id/editText2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:text="editText2">
+            android:text="editText1" >
 
             <requestFocus />
         </EditText>
-
-        <TextView
-            android:id="@+id/textViewSelect3"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="WHERE"
-            android:textAlignment="center" />
-
         <EditText
             android:id="@+id/editText3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:text="editText3">
+            android:text="editText1" >
 
             <requestFocus />
         </EditText>
+        <EditText
+            android:id="@+id/txtData"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:text="txtData" />
 
-    </LinearLayout>   
-  
+    </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical" >
 
+        <Spinner
+            android:id="@+id/spinner1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
 
     </LinearLayout>
-<LinearLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical" >
 
+        <Spinner
+            android:id="@+id/spinner2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
-</LinearLayout>
-<LinearLayout
+
+    </LinearLayout>
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical" >
 
-
-</LinearLayout>
-
-<GridLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content" >
+        <Spinner
+            android:id="@+id/spinner3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
 
-</GridLayout>
+    </LinearLayout>
+
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+
+    </GridLayout>
 
 </LinearLayout>
 

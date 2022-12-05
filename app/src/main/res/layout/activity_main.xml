@@ -52,7 +52,7 @@
         <TextView
             android:id="@+id/textView1"
             android:layout_width="match_parent"
-            android:layout_height="263dp"
+            android:layout_height="408dp"
             android:text="Salut" />
 
         <EditText

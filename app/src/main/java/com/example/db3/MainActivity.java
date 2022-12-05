@@ -36,7 +36,7 @@ import android.widget.AdapterView.OnItemSelectedListener;
 
 @SuppressLint("SdCardPath")
 public class MainActivity extends Activity {
-    String DBName="Shop3";
+    String DBName="lab3";
 
     public DecimalFormat df = new DecimalFormat("#.##");
     String [] data2=new String[50];
@@ -290,13 +290,12 @@ public class MainActivity extends Activity {
             s2[j]=s2[j].trim();
 
 
-        String studLista1= "select a.AId as AdId, a.Title AS Title, a.Price AS Price, a.Amount as Am, u.Fname as Name, u.Phone as Ph "
+        String studLista1= "select a.AId as AdId, a.Title AS Title, a.Price AS Price, a.Amount as Am, u.Fname as Name, u.Phone as Ph, f.UserId as FuId, c.Com as Com , r.Rat as Rat "
                 + "from UsersM as u "
-                + "inner join AdvertsM as a on a.Uid=u.UserId, "
-                + "inner join FavoritesM as f "
-                + "inner join CommentsM as c "
-                + "inner join RatingsM as r "
-                + ""
+                + "inner join AdvertsM as a on a.Uid=u.UserId "
+                + "inner join FavoritesM as f on f.UserId = u.UserId "
+                + "inner join CommentsM as c on c.OwId = u.UserId "
+                + "inner join RatingsM as r on r.OwId = u.UserId "
                 + "where " +whereC;
 
         Cursor c;
@@ -549,16 +548,16 @@ public class MainActivity extends Activity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        if(item.getTitle()=="Grid")
-        {
+            // Handle action bar item clicks here. The action bar will
+            // automatically handle clicks on the Home/Up button, so long
+            // as you specify a parent activity in AndroidManifest.xml.
+            if(item.getTitle()=="Grid")
+            {
 
+            }
+            return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
     }
-}
 
 
 

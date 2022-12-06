@@ -36,7 +36,7 @@ import android.widget.AdapterView.OnItemSelectedListener;
 
 @SuppressLint("SdCardPath")
 public class MainActivity extends Activity {
-    String DBName="lab3";
+    String DBName="lab1";
 
     public DecimalFormat df = new DecimalFormat("#.##");
     String [] data2=new String[50];
@@ -75,7 +75,7 @@ public class MainActivity extends Activity {
         et3=(EditText)findViewById(R.id.editText3);
         tv.setMovementMethod(new ScrollingMovementMethod());
         String whereC="  NF > ?  OR PF=? ";
-        whereC="  Price > ?  OR Am > ? ";
+        whereC="  PPrice = ?  OR SQuant > ? ";
         String whereV=" 6; 5; ";
         et1.setText(whereC);
         et2.setText("Editable Values for Restriction(s):  " );
@@ -290,12 +290,10 @@ public class MainActivity extends Activity {
             s2[j]=s2[j].trim();
 
 
-        String studLista1= "select a.AId as AdId, a.Title AS Title, a.Price AS Price, a.Amount as Am, u.Fname as Name, u.Phone as Ph, f.UserId as FuId, c.Com as Com , r.Rat as Rat "
-                + "from UsersM as u "
-                + "inner join AdvertsM as a on a.Uid=u.UserId "
-                + "inner join FavoritesM as f on f.UserId = u.UserId "
-                + "inner join CommentsM as c on c.OwId = u.UserId "
-                + "inner join RatingsM as r on r.OwId = u.UserId "
+        String studLista1= "select PR.prid as ProdID, PR.prn AS ProdN,PR.price AS PPrice, SM.quants as SQuant "
+                + "from ProductsM as PR "
+                + "inner join SalesM as SM "
+                + "on SM.prid=PR.prid "
                 + "where " +whereC;
 
         Cursor c;

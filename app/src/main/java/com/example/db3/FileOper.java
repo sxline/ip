@@ -30,7 +30,7 @@ public class FileOper {
         {// read from ListOfTables
             try {
                 //File myFile = new File("/storage/extSdCard/"+tablesN+".txt");
-                File myFile = new File("/storage/emulated/ip/lab1/"+tablesN+".txt");
+                File myFile = new File("/storage/emulated/ip/lab3/"+tablesN+".txt");
                 FileInputStream fIn = new FileInputStream(myFile);
                 BufferedReader myReader = new BufferedReader(
                         new InputStreamReader(fIn));

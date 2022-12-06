@@ -76,7 +76,7 @@ public class MainActivity extends Activity {
         tv.setMovementMethod(new ScrollingMovementMethod());
         String whereC="  NF > ?  OR PF=? ";
         whereC="  Price > ?  OR Am > ? ";
-        String whereV=" 6; 5; ";
+        String whereV=" 1; 5; ";
         et1.setText(whereC);
         et2.setText("Editable Values for Restriction(s):  " );
         et3.setText(whereV);

@@ -289,7 +289,7 @@ public class MainActivity extends Activity {
         for (int j=0;j<np;j++)
             s2[j]=s2[j].trim();
 
-        String studLista1= "select ProductsM.PrN as PrN, ProductsM.Price as Price, SalesM.QuantS as QuantS,  SalesM.Date1 AS Date, FurnizorM.fName AS fName, ClientM.cName as cName, CategoriiM.CaTN as CaTN"
+        String studLista1= "select ProductsM.PrId as PrId,  ProductsM.PrN as PrN, ProductsM.Price as Price, SalesM.QuantS as QuantS,  SalesM.Date1 AS Date, FurnizorM.fName AS fName, ClientM.cName as cName, CategoriiM.CaTN as CaTN"
                 + " from SalesM  "
                 + "inner join ProductsM  on SalesM.PrId = ProductsM.PrId "
                 + "inner join FurnizorM on FurnizorM.fID=SalesM.fID "

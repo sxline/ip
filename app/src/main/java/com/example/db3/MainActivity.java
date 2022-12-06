@@ -75,7 +75,7 @@ public class MainActivity extends Activity {
         et3=(EditText)findViewById(R.id.editText3);
         tv.setMovementMethod(new ScrollingMovementMethod());
         String whereC="  NF > ?  OR PF=? ";
-        whereC="  PPrice = ?  OR SQuant > ? ";
+        whereC="  Price = ?  OR QuantS > ? ";
         String whereV=" 6; 5; ";
         et1.setText(whereC);
         et2.setText("Editable Values for Restriction(s):  " );
@@ -289,11 +289,12 @@ public class MainActivity extends Activity {
         for (int j=0;j<np;j++)
             s2[j]=s2[j].trim();
 
-
-        String studLista1= "select PR.prid as ProdID, PR.prn AS ProdN,PR.price AS PPrice, SM.quants as SQuant "
-                + "from ProductsM as PR "
-                + "inner join SalesM as SM "
-                + "on SM.prid=PR.prid "
+        String studLista1= "select ProductsM.PrN as PrN, ProductsM.Price as Price, SalesM.QuantS as QuantS,  SalesM.Date1 AS Date, FurnizorM.fName AS fName, ClientM.cName as cName, CategoriiM.CaTN as CaTN"
+                + " from SalesM  "
+                + "inner join ProductsM  on SalesM.PrId = ProductsM.PrId "
+                + "inner join FurnizorM on FurnizorM.fID=SalesM.fID "
+                + "inner join ClientM on ClientM.cID=SalesM.cID "
+                + "inner join CategoriiM on CategoriiM.CatId=ProductsM.Cat "
                 + "where " +whereC;
 
         Cursor c;

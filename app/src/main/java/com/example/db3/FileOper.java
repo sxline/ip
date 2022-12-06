@@ -3,7 +3,16 @@ package com.example.db3;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
 
 
 import android.util.Log;
@@ -30,7 +39,7 @@ public class FileOper {
         {// read from ListOfTables
             try {
                 //File myFile = new File("/storage/extSdCard/"+tablesN+".txt");
-                File myFile = new File("/storage/emulated/ip/lab3/"+tablesN+".txt");
+                File myFile = new File("/storage/emulated/ip/lab4/"+tablesN+".txt");
                 FileInputStream fIn = new FileInputStream(myFile);
                 BufferedReader myReader = new BufferedReader(
                         new InputStreamReader(fIn));
@@ -49,6 +58,26 @@ public class FileOper {
         rez=aBuffer;
         return rez;
     }
+
+    public ArrayList<String> readT(String table) {
+        ArrayList<String> dataList = new ArrayList<>();
+        try {
+            String path = "/storage/emulated/ip/lab4/" + table + ".txt";
+            File myObj = new File(path);
+            Scanner myReader = new Scanner(myObj);
+            while (myReader.hasNextLine()) {
+                dataList.add(myReader.nextLine());
+            }
+            myReader.close();
+            return dataList;
+        } catch (FileNotFoundException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
     public int proba()
     {
         int i=3;

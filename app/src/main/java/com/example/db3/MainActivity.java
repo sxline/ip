@@ -6,6 +6,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
 
 import com.example.db3.R;
 
@@ -33,10 +38,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemSelectedListener;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 
 @SuppressLint("SdCardPath")
 public class MainActivity extends Activity {
-    String DBName="lab3";
+    String DBName="lab4";
 
     public DecimalFormat df = new DecimalFormat("#.##");
     String [] data2=new String[50];
@@ -75,7 +83,7 @@ public class MainActivity extends Activity {
         et3=(EditText)findViewById(R.id.editText3);
         tv.setMovementMethod(new ScrollingMovementMethod());
         String whereC="  NF > ?  OR PF=? ";
-        whereC="  Price > ?  OR Am > ? ";
+        whereC="  Price > ?  OR Amount > ? ";
         String whereV=" 6; 5; ";
         et1.setText(whereC);
         et2.setText("Editable Values for Restriction(s):  " );
@@ -159,23 +167,19 @@ public class MainActivity extends Activity {
 
     }
     public boolean exists(String table) {
-        Cursor c = null;
-        boolean tableExists = false;
-        /* get cursor on it */
         try
         {
-            c = db.query(table, null,
+            Cursor c = db.query(table, null,
                     null, null, null, null, null);
-            tableExists = true;
             Log.d("About existing ", "The table "+table+"  exists! :))))");
+            return true;
         }
         catch (Exception e) {
             /* fail */
             Log.d("The table is missing", table+" doesn't exist :(((");
 
         }
-
-        return tableExists;
+        return false;
     }
 
     public void fillTAB(View v)
@@ -250,38 +254,25 @@ public class MainActivity extends Activity {
     }
     public void studL(View v)
     {
-        String studLista="SELECT latitude, longitude, COUNT(*) count"+
-                "FROM tasks  "
-                + " GROUP BY latitude, longitude "
-                +  "HAVING count >1 1";
-
+        tabel = new FileOper();
         dbHelper = new DBHelper(this, DBName);
         db = dbHelper.getWritableDatabase();
         Log.d("Create DB=","The DB " +DBName+ "  was created OR Opened the exiting one!");
         Log.d("Group By", "--- INNER JOIN with rawQuery---");
 
-        String sqlQuery = "select PL.name as Name, PS.name as Position, salary as Salary "
-                + "from people as PL "
-                + "inner join position as PS "
-                + "on PL.posid = PS.id "
-                + "where salary > ?";
         int v1=7,v2=8;
         String vv1=String.valueOf(v1);
         String vv2=String.valueOf(v2);
         String vv3="prof3", vv4="prof2";
 
-        // String whereV="Ex > " + vv1 + "  and  Re > " + vv2 + " and ( PF=" +vv3 + "  or PF = " + vv4 +")";
-        //  String [] s1=et.getText().toString().split("\n");
-        // String [] s2=s1[2].split(";");
-        String  whereC=et1.getText().toString().trim();
+        String  whereC= " where " + et1.getText().toString().trim();
         String  whereV=et3.getText().toString().trim();
 
         whereV=whereV.replace(" ", "");
         String [] s2=whereV.split(";");
-        //vv1=s2[0].trim(); vv2=s2[1].trim(); vv3=s2[2].trim(); vv4=s2[3].trim();
-        // String []  val =new String[4];
+
         int np=s2.length;
-        //whereC=s1[0];
+
         Log.d("Numar de parametri","parametri= "+np);
         Log.d("WhereC=","whereC= "+whereC  );
         Log.d("WhereV=","whereV= "+whereV  );
@@ -289,14 +280,11 @@ public class MainActivity extends Activity {
         for (int j=0;j<np;j++)
             s2[j]=s2[j].trim();
 
+        String select =  GetSelect();
+        String connections = GetConnections();
 
-        String studLista1= "select a.AId as AdId, a.Title AS Title, a.Price AS Price, a.Amount as Am, u.Fname as Name, u.Phone as Ph, f.UserId as FuId, c.Com as Com , r.Rat as Rat "
-                + "from UsersM as u "
-                + "inner join AdvertsM as a on a.Uid=u.UserId "
-                + "inner join FavoritesM as f on f.UserId = u.UserId "
-                + "inner join CommentsM as c on c.OwId = u.UserId "
-                + "inner join RatingsM as r on r.OwId = u.UserId "
-                + "where " +whereC;
+
+        String studLista1= select + connections + whereC;
 
         Cursor c;
         c=null;
@@ -309,6 +297,33 @@ public class MainActivity extends Activity {
         txtData.setText("Example of Conditions: " +whereC );
         // txtData.append(whereV);
 
+    }
+
+    public String GetSelect(){
+        String tableName = "selectM";
+        ArrayList<String> dataList = tabel.readT(tableName);
+        String select = "select ";
+        for (String el : dataList){
+            String[] words = el.split("\t");
+            for (int i = 1; i< words.length; i ++){
+                select = select + " " + words[0]+ "." + words[i] + " as " + words[i] + ", ";
+            }
+        }
+        Log.d("select", select);
+        return select.substring(0, select.length()-2);
+    }
+
+    public String GetConnections(){
+        String tableName = "connectionsM";
+        ArrayList<String> dataList = tabel.readT(tableName);
+        String connections = " from " + dataList.get(0) + " ";
+
+        for (int i = 1; i < dataList.size(); i++){
+            String[] el = dataList.get(i).split("\t");
+            connections = connections + " inner join " + el[0] + " on " + el[1] + " = " + el[2] + " ";
+        }
+        Log.d("connections", connections);
+        return connections;
     }
 
 

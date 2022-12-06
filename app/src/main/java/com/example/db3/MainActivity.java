@@ -36,7 +36,7 @@ import android.widget.AdapterView.OnItemSelectedListener;
 
 @SuppressLint("SdCardPath")
 public class MainActivity extends Activity {
-    String DBName="lab1";
+    String DBName="lab2";
 
     public DecimalFormat df = new DecimalFormat("#.##");
     String [] data2=new String[50];
